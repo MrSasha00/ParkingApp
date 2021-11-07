@@ -3,7 +3,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using TestApp.Annotations;
+using Xamarin.Forms;
 
 namespace TestApp
 {
@@ -28,13 +30,51 @@ namespace TestApp
 		private ParkingService _parkingService;
 
 		/// <summary>
+		/// Выбранная парковка.
+		/// </summary>
+		private Parking selectedParking;
+
+		/// <summary>
+		/// Для навигации между страницами.
+		/// </summary>
+		public INavigation Navigation;
+
+		/// <summary>
+		/// Команда назад.
+		/// </summary>
+		public ICommand BackCommand { protected set; get; }
+
+		/// <summary>
 		/// Конструктор.
 		/// </summary>
 		public ApplicationViewModel()
 		{
 			Parkings = new ObservableCollection<Parking>();
 			_parkingService = new ParkingService();
+			BackCommand = new Command(Back);
 			GetParkings();
+		}
+
+		public Parking SelectedParking
+		{
+			get { return selectedParking; }
+			set
+			{
+				if (selectedParking != value)
+				{
+					var tempParking = new Parking
+					{
+						Id = value.Id,
+						Address = value.Address,
+						FreeParkingSpaces = value.FreeParkingSpaces,
+						TotalParkingSpaces = value.TotalParkingSpaces
+					};
+					selectedParking = null;
+					NotifyPropertyChanged("SelectedParking");
+					// TODO: Передать сюда страницу с детальной парковкой
+					Navigation.PushAsync(new Page());
+				}
+			}
 		}
 
 		/// <summary>
@@ -50,13 +90,20 @@ namespace TestApp
 		}
 
 		/// <summary>
-		/// Оповещает об изменениях состояния.
+		/// Оповещает об изменениях.
 		/// </summary>
-		/// <param name="propertyName"></param>
-		[NotifyPropertyChangedInvocator]
-		protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
+		protected virtual void NotifyPropertyChanged(string propertyName)
 		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			if (PropertyChanged != null)
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		/// <summary>
+		/// Для навигации назад.
+		/// </summary>
+		private void Back()
+		{
+			Navigation.PopAsync();
 		}
 	}
 }
