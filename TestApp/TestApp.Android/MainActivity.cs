@@ -8,7 +8,7 @@ using Android.OS;
 
 namespace TestApp.Android
 {
-    [Activity(Label = "TestApp", Theme = "@style/MainTheme", MainLauncher = true,
+    [Activity(Label = "Parking", Theme = "@style/MainTheme", MainLauncher = true,
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {

@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using TestApp.Models;
 
+
 namespace TestApp
 {
 	/// <summary>
@@ -56,6 +57,7 @@ namespace TestApp
 		{
 			var client = GetClient();
 			var response = await client.GetStringAsync("parkings/" + id);
+			
 			var res = JsonSerializer.Deserialize<DetailParking>(response, options);
 			return res;
 		}
