@@ -1,4 +1,6 @@
-﻿namespace TestApp
+﻿using System;
+
+namespace TestApp.Models
 {
 	public class DetailParking : Parking
 	{

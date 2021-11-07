@@ -6,15 +6,13 @@
 
 	<StackLayout>
 		<StackLayout>
-			<Label Text="{Binding Path=Model.Id}" FontSize="Medium" />
-			<Label Text="{Binding Path=Model.Address}" FontSize="Medium" />
-			<Label Text="{Binding Path=Model.TotalParkingSpaces}" FontSize="Medium" />
-			<Label Text="{Binding Path=Model.FreeParkingSpaces}" FontSize="Medium" />
-
-			<!-- <Label Text="Электронная почта" /> -->
-			<!-- <Label Text="{Binding Path=Model.Email}" FontSize="Medium" /> -->
-			<!-- <Label Text="Телефон" /> -->
-			<!-- <Label Text="{Binding Path=Model.Phone}" FontSize="Medium" /> -->
+			<Label Text="{Binding Path=DetModel.Id}" FontSize="Medium" />
+			<Label Text="{Binding Path=DetModel.Address}" FontSize="Medium" />
+			<Label Text="{Binding Path=DetModel.TotalParkingSpaces}" FontSize="Medium" />
+			<Label Text="{Binding Path=DetModel.FreeParkingSpaces}" FontSize="Medium" />
+			<Label Text="{Binding Path=DetModel.CoordX}" FontSize="Medium" />
+			<Label Text="{Binding Path=DetModel.CoordY}" FontSize="Medium" />
+			<Label Text="{Binding Path=DetModel.CameraLink}" FontSize="Medium" />
 		</StackLayout>
 	</StackLayout>
 </ContentPage>

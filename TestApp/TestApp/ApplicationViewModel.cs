@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using TestApp.Annotations;
+using TestApp.Models;
 using Xamarin.Forms;
 
 namespace TestApp
@@ -39,6 +40,17 @@ namespace TestApp
 		private Parking selectedParking;
 
 		/// <summary>
+		/// Выбранная парковка.
+		/// </summary>
+		public DetailParking selectedDetailParking;
+		
+
+		/// <summary>
+		/// Выбранная парковка.
+		/// </summary>
+		private int selectedId;
+
+		/// <summary>
 		/// Для навигации между страницами.
 		/// </summary>
 		public INavigation Navigation { get; set; }
@@ -65,6 +77,7 @@ namespace TestApp
 			{
 				if (selectedParking != value)
 				{
+					selectedId = value.Id;
 					var tempParking = new Parking
 					{
 						Id = value.Id,
@@ -72,7 +85,7 @@ namespace TestApp
 						FreeParkingSpaces = value.FreeParkingSpaces,
 						TotalParkingSpaces = value.TotalParkingSpaces
 					};
-					selectedParking = null;
+					//selectedParking = null;
 					NotifyPropertyChanged("SelectedParking");
 					// TODO: Передать сюда страницу с детальной парковкой
 					Navigation.PushAsync(new ParkingPage(tempParking, this));
@@ -111,6 +124,11 @@ namespace TestApp
 		private void Back()
 		{
 			Navigation.PopAsync();
+		}
+
+		public async Task GetParkById()
+		{
+			selectedDetailParking = await _parkingService.Get(selectedId);
 		}
 	}
 }
