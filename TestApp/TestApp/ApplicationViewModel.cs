@@ -15,6 +15,10 @@ namespace TestApp
 	public class ApplicationViewModel : INotifyPropertyChanged
 	{
 		/// <summary>
+		/// Флаг инициализации.
+		/// </summary>
+		private bool IsInit = false;
+		/// <summary>
 		/// Событие для оповещения об изменениях состояния.
 		/// </summary>
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -37,7 +41,7 @@ namespace TestApp
 		/// <summary>
 		/// Для навигации между страницами.
 		/// </summary>
-		public INavigation Navigation;
+		public INavigation Navigation { get; set; }
 
 		/// <summary>
 		/// Команда назад.
@@ -52,12 +56,11 @@ namespace TestApp
 			Parkings = new ObservableCollection<Parking>();
 			_parkingService = new ParkingService();
 			BackCommand = new Command(Back);
-			GetParkings();
 		}
 
 		public Parking SelectedParking
 		{
-			get { return selectedParking; }
+			get => selectedParking;
 			set
 			{
 				if (selectedParking != value)
@@ -72,7 +75,7 @@ namespace TestApp
 					selectedParking = null;
 					NotifyPropertyChanged("SelectedParking");
 					// TODO: Передать сюда страницу с детальной парковкой
-					Navigation.PushAsync(new Page());
+					Navigation.PushAsync(new ParkingPage(tempParking, this));
 				}
 			}
 		}
@@ -80,13 +83,17 @@ namespace TestApp
 		/// <summary>
 		/// Получает все парковки.
 		/// </summary>
-		public async void GetParkings()
+		public async Task GetParkings()
 		{
-			var parkings = await _parkingService.Get();
+			if (IsInit)
+				return;
+			var parkings = await _parkingService.GetAll();
 			foreach (var parking in parkings)
 			{
 				Parkings.Add(parking);
 			}
+
+			IsInit = true;
 		}
 
 		/// <summary>
