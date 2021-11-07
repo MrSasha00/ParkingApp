@@ -3,11 +3,18 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TestApp.ParkingPage">
-	<ContentPage.Content>
+
+	<StackLayout>
 		<StackLayout>
-			<Label Text="Hello, world!"
-			       VerticalOptions="CenterAndExpand"
-			       HorizontalOptions="CenterAndExpand" />
+			<Label Text="{Binding Path=Model.Id}" FontSize="Medium" />
+			<Label Text="{Binding Path=Model.Address}" FontSize="Medium" />
+			<Label Text="{Binding Path=Model.TotalParkingSpaces}" FontSize="Medium" />
+			<Label Text="{Binding Path=Model.FreeParkingSpaces}" FontSize="Medium" />
+
+			<!-- <Label Text="Электронная почта" /> -->
+			<!-- <Label Text="{Binding Path=Model.Email}" FontSize="Medium" /> -->
+			<!-- <Label Text="Телефон" /> -->
+			<!-- <Label Text="{Binding Path=Model.Phone}" FontSize="Medium" /> -->
 		</StackLayout>
-	</ContentPage.Content>
+	</StackLayout>
 </ContentPage>
