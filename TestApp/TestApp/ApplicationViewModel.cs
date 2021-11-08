@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TestApp.Annotations;
 using TestApp.Models;
 using Xamarin.Forms;
 
@@ -15,10 +12,18 @@ namespace TestApp
 	/// </summary>
 	public class ApplicationViewModel : INotifyPropertyChanged
 	{
+		#region Fields
+
 		/// <summary>
 		/// Флаг инициализации.
 		/// </summary>
 		private bool IsInit = false;
+
+		/// <summary>
+		/// Флаг загрузки.
+		/// </summary>
+		private bool isBusy;
+
 		/// <summary>
 		/// Событие для оповещения об изменениях состояния.
 		/// </summary>
@@ -42,11 +47,14 @@ namespace TestApp
 		/// <summary>
 		/// Выбранная парковка.
 		/// </summary>
-		public DetailParking selectedDetailParking;
-		
+		public DetailParking SelectedDetailParking
+		{
+			get => _selectedDetailParking;
+			private set => _selectedDetailParking = value;
+		}
 
 		/// <summary>
-		/// Выбранная парковка.
+		/// Идентификатор выбранной парковки.
 		/// </summary>
 		private int selectedId;
 
@@ -61,15 +69,8 @@ namespace TestApp
 		public ICommand BackCommand { protected set; get; }
 
 		/// <summary>
-		/// Конструктор.
+		/// Публичное поле для выбранной парковки.
 		/// </summary>
-		public ApplicationViewModel()
-		{
-			Parkings = new ObservableCollection<Parking>();
-			_parkingService = new ParkingService();
-			BackCommand = new Command(Back);
-		}
-
 		public Parking SelectedParking
 		{
 			get => selectedParking;
@@ -86,11 +87,45 @@ namespace TestApp
 						TotalParkingSpaces = value.TotalParkingSpaces
 					};
 					//selectedParking = null;
+					_selectedDetailParking = null;
 					NotifyPropertyChanged("SelectedParking");
 					// TODO: Передать сюда страницу с детальной парковкой
-					Navigation.PushAsync(new ParkingPage(tempParking, this));
+					Navigation.PushAsync(new ParkingPage(this));
 				}
 			}
+		}
+
+		/// <summary>
+		/// Выбранная парковка.
+		/// </summary>
+		private DetailParking _selectedDetailParking;
+
+		/// <summary>
+		/// Флаг загрузки.
+		/// </summary>
+		public bool IsBusy
+		{
+			get { return isBusy; }
+			set
+			{
+				isBusy = value;
+				NotifyPropertyChanged("IsBusy");
+				//NotifyPropertyChanged("IsLoaded");
+			}
+		}
+
+		public bool IsLoaded => !isBusy;
+
+		#endregion
+		
+		/// <summary>
+		/// Конструктор.
+		/// </summary>
+		public ApplicationViewModel()
+		{
+			Parkings = new ObservableCollection<Parking>();
+			_parkingService = new ParkingService();
+			BackCommand = new Command(Back);
 		}
 
 		/// <summary>
@@ -100,12 +135,14 @@ namespace TestApp
 		{
 			if (IsInit)
 				return;
+			IsBusy = true;
 			var parkings = await _parkingService.GetAll();
 			foreach (var parking in parkings)
 			{
 				Parkings.Add(parking);
 			}
 
+			IsBusy = false;
 			IsInit = true;
 		}
 
@@ -126,9 +163,15 @@ namespace TestApp
 			Navigation.PopAsync();
 		}
 
+		/// <summary>
+		/// Получение парковки по Id.
+		/// </summary>
 		public async Task GetParkById()
 		{
-			selectedDetailParking = await _parkingService.Get(selectedId);
+			IsBusy = true;
+			SelectedDetailParking = await _parkingService.Get(selectedId);
+			NotifyPropertyChanged("SelectedDetailParking");
+			IsBusy = false;
 		}
 	}
 }
