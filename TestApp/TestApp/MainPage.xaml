@@ -3,16 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TestApp.MainPage" Title="Список парковок">
 	<StackLayout>
-		<ListView x:Name="parkingsList"
-		          SelectedItem="{Binding SelectedParking, Mode=TwoWay}"
-		          HasUnevenRows="True"
-		          ItemsSource="{Binding Parkings}">
+		<ListView x:Name="ParkingList"
+			SelectedItem="{Binding SelectedParking, Mode=TwoWay}"
+			HasUnevenRows="True"
+			ItemsSource="{Binding ParkingPlaces}">
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<ViewCell>
 						<ViewCell.View>
 							<StackLayout>
-								<Label Text="{Binding Address}" FontSize="18" Padding="3"/>
+								<Label Text="{Binding Address}" FontSize="18" Padding="3" />
 								<Label Padding="3">
 									<Label.FormattedText>
 										<FormattedString>

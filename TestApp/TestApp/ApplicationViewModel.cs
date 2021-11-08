@@ -32,7 +32,11 @@ namespace TestApp
 		/// <summary>
 		/// Список парковок. 
 		/// </summary>
-		public ObservableCollection<Parking> Parkings { get; set; }
+		public ObservableCollection<Parking> ParkingPlaces
+		{
+			get => _parkingPlaces;
+			set => _parkingPlaces = value;
+		}
 
 		/// <summary>
 		/// Сервис для работы с API.
@@ -61,12 +65,20 @@ namespace TestApp
 		/// <summary>
 		/// Для навигации между страницами.
 		/// </summary>
-		public INavigation Navigation { get; set; }
+		public INavigation Navigation
+		{
+			get => _navigation;
+			set => _navigation = value;
+		}
 
 		/// <summary>
 		/// Команда назад.
 		/// </summary>
-		public ICommand BackCommand { protected set; get; }
+		public ICommand BackCommand
+		{
+			protected set => _backCommand = value;
+			get => _backCommand;
+		}
 
 		/// <summary>
 		/// Публичное поле для выбранной парковки.
@@ -100,6 +112,10 @@ namespace TestApp
 		/// </summary>
 		private DetailParking _selectedDetailParking;
 
+		private ObservableCollection<Parking> _parkingPlaces;
+		private INavigation _navigation;
+		private ICommand _backCommand;
+
 		/// <summary>
 		/// Флаг загрузки.
 		/// </summary>
@@ -123,7 +139,7 @@ namespace TestApp
 		/// </summary>
 		public ApplicationViewModel()
 		{
-			Parkings = new ObservableCollection<Parking>();
+			ParkingPlaces = new ObservableCollection<Parking>();
 			_parkingService = new ParkingService();
 			BackCommand = new Command(Back);
 		}
@@ -139,7 +155,7 @@ namespace TestApp
 			var parkings = await _parkingService.GetAll();
 			foreach (var parking in parkings)
 			{
-				Parkings.Add(parking);
+				ParkingPlaces.Add(parking);
 			}
 
 			IsBusy = false;
