@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TestApp.ParkingPage">
+
+	<StackLayout>
+		<StackLayout>
+			<Label Padding="3">
+				<Label.FormattedText>
+					<FormattedString>
+						<Span Text="Адрес: "></Span>
+						<Span Text="{Binding Path=ViewModel.SelectedDetailParking.Address}" FontSize="18"></Span>
+					</FormattedString>
+				</Label.FormattedText>
+			</Label>
+			<Label Padding="3">
+				<Label.FormattedText>
+					<FormattedString>
+						<Span Text="Всего мест: "></Span>
+						<Span Text="{Binding Path=ViewModel.SelectedDetailParking.TotalParkingSpaces}"></Span>
+					</FormattedString>
+				</Label.FormattedText>
+			</Label>
+			<Label Padding="3">
+				<Label.FormattedText>
+					<FormattedString>
+						<Span Text="Свободных мест: "></Span>
+						<Span Text="{Binding Path=ViewModel.SelectedDetailParking.FreeParkingSpaces}"></Span>
+					</FormattedString>
+				</Label.FormattedText>
+			</Label>
+			<Label Padding="3">
+				<Label.FormattedText>
+					<FormattedString>
+						<Span Text="X: "></Span>
+						<Span Text="{Binding Path=ViewModel.SelectedDetailParking.CoordX}"></Span>
+					</FormattedString>
+				</Label.FormattedText>
+			</Label>
+			<Label Padding="3">
+				<Label.FormattedText>
+					<FormattedString>
+						<Span Text="Y: "></Span>
+						<Span Text="{Binding Path=ViewModel.SelectedDetailParking.CoordY}"></Span>
+					</FormattedString>
+				</Label.FormattedText>
+			</Label>
+			<Image Source="{Binding Path=ViewModel.SelectedDetailParking.Camera}" AbsoluteLayout.LayoutBounds="0,0,1,1"   AbsoluteLayout.LayoutFlags="All" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFill"/>
+			<StackLayout IsVisible="{Binding ViewModel.IsBusy}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Padding="20">
+				<Label Text="Загрузка данных..." TextColor="Gray" HorizontalOptions="Center" />
+				<ActivityIndicator IsRunning="{Binding ViewModel.IsBusy}" Color="Red" ></ActivityIndicator>
+			</StackLayout>
+		</StackLayout>
+	</StackLayout>
+</ContentPage>

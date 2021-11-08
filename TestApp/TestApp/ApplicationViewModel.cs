@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using TestApp.Annotations;
+using System.Windows.Input;
+using TestApp.Models;
+using Xamarin.Forms;
 
 namespace TestApp
 {
@@ -12,6 +12,18 @@ namespace TestApp
 	/// </summary>
 	public class ApplicationViewModel : INotifyPropertyChanged
 	{
+		#region Fields
+
+		/// <summary>
+		/// Флаг инициализации.
+		/// </summary>
+		private bool IsInit = false;
+
+		/// <summary>
+		/// Флаг загрузки.
+		/// </summary>
+		private bool isBusy;
+
 		/// <summary>
 		/// Событие для оповещения об изменениях состояния.
 		/// </summary>
@@ -28,35 +40,138 @@ namespace TestApp
 		private ParkingService _parkingService;
 
 		/// <summary>
+		/// Выбранная парковка.
+		/// </summary>
+		private Parking selectedParking;
+
+		/// <summary>
+		/// Выбранная парковка.
+		/// </summary>
+		public DetailParking SelectedDetailParking
+		{
+			get => _selectedDetailParking;
+			private set => _selectedDetailParking = value;
+		}
+
+		/// <summary>
+		/// Идентификатор выбранной парковки.
+		/// </summary>
+		private int selectedId;
+
+		/// <summary>
+		/// Для навигации между страницами.
+		/// </summary>
+		public INavigation Navigation { get; set; }
+
+		/// <summary>
+		/// Команда назад.
+		/// </summary>
+		public ICommand BackCommand { protected set; get; }
+
+		/// <summary>
+		/// Публичное поле для выбранной парковки.
+		/// </summary>
+		public Parking SelectedParking
+		{
+			get => selectedParking;
+			set
+			{
+				if (selectedParking != value)
+				{
+					selectedId = value.Id;
+					var tempParking = new Parking
+					{
+						Id = value.Id,
+						Address = value.Address,
+						FreeParkingSpaces = value.FreeParkingSpaces,
+						TotalParkingSpaces = value.TotalParkingSpaces
+					};
+					//selectedParking = null;
+					_selectedDetailParking = null;
+					NotifyPropertyChanged("SelectedParking");
+					// TODO: Передать сюда страницу с детальной парковкой
+					Navigation.PushAsync(new ParkingPage(this));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Выбранная парковка.
+		/// </summary>
+		private DetailParking _selectedDetailParking;
+
+		/// <summary>
+		/// Флаг загрузки.
+		/// </summary>
+		public bool IsBusy
+		{
+			get { return isBusy; }
+			set
+			{
+				isBusy = value;
+				NotifyPropertyChanged("IsBusy");
+				//NotifyPropertyChanged("IsLoaded");
+			}
+		}
+
+		public bool IsLoaded => !isBusy;
+
+		#endregion
+		
+		/// <summary>
 		/// Конструктор.
 		/// </summary>
 		public ApplicationViewModel()
 		{
 			Parkings = new ObservableCollection<Parking>();
 			_parkingService = new ParkingService();
-			GetParkings();
+			BackCommand = new Command(Back);
 		}
 
 		/// <summary>
 		/// Получает все парковки.
 		/// </summary>
-		public async void GetParkings()
+		public async Task GetParkings()
 		{
-			var parkings = await _parkingService.Get();
+			if (IsInit)
+				return;
+			IsBusy = true;
+			var parkings = await _parkingService.GetAll();
 			foreach (var parking in parkings)
 			{
 				Parkings.Add(parking);
 			}
+
+			IsBusy = false;
+			IsInit = true;
 		}
 
 		/// <summary>
-		/// Оповещает об изменениях состояния.
+		/// Оповещает об изменениях.
 		/// </summary>
-		/// <param name="propertyName"></param>
-		[NotifyPropertyChangedInvocator]
-		protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
+		protected virtual void NotifyPropertyChanged(string propertyName)
 		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			if (PropertyChanged != null)
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		/// <summary>
+		/// Для навигации назад.
+		/// </summary>
+		private void Back()
+		{
+			Navigation.PopAsync();
+		}
+
+		/// <summary>
+		/// Получение парковки по Id.
+		/// </summary>
+		public async Task GetParkById()
+		{
+			IsBusy = true;
+			SelectedDetailParking = await _parkingService.Get(selectedId);
+			NotifyPropertyChanged("SelectedDetailParking");
+			IsBusy = false;
 		}
 	}
 }

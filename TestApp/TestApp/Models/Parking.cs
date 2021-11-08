@@ -1,4 +1,4 @@
-﻿namespace TestApp
+﻿namespace TestApp.Models
 {
 	public class Parking
 	{

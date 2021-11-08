@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TestApp.MainPage" Title="Список парковок">
 	<StackLayout>
-		<ListView x:Name="phonesList"
+		<ListView x:Name="parkingsList"
+		          SelectedItem="{Binding SelectedParking, Mode=TwoWay}"
 		          HasUnevenRows="True"
 		          ItemsSource="{Binding Parkings}">
 			<ListView.ItemTemplate>
@@ -11,8 +12,8 @@
 					<ViewCell>
 						<ViewCell.View>
 							<StackLayout>
-								<Label Text="{Binding Address}" FontSize="18" />
-								<Label>
+								<Label Text="{Binding Address}" FontSize="18" Padding="3"/>
+								<Label Padding="3">
 									<Label.FormattedText>
 										<FormattedString>
 											<Span Text="Всего мест: "></Span>
@@ -20,7 +21,7 @@
 										</FormattedString>
 									</Label.FormattedText>
 								</Label>
-								<Label>
+								<Label Padding="3">
 									<Label.FormattedText>
 										<FormattedString>
 											<Span Text="Мест свободно: "></Span>
@@ -34,5 +35,9 @@
 				</DataTemplate>
 			</ListView.ItemTemplate>
 		</ListView>
+		<StackLayout IsVisible="{Binding IsBusy}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Padding="20">
+			<Label Text="Загрузка данных..." TextColor="Gray" HorizontalOptions="Center" />
+			<ActivityIndicator IsRunning="{Binding IsBusy}" Color="Red" ></ActivityIndicator>
+		</StackLayout>
 	</StackLayout>
 </ContentPage>

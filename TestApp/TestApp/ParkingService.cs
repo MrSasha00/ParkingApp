@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using TestApp.Models;
+
 
 namespace TestApp
 {
@@ -38,12 +40,25 @@ namespace TestApp
 		/// <summary>
 		/// Получает все парковки.
 		/// </summary>
-		/// <returns></returns>
-		public async Task<IEnumerable<Parking>> Get()
+		/// <returns>Список парковок.</returns>
+		public async Task<IEnumerable<Parking>> GetAll()
 		{
 			var client = GetClient();
 			var response = await client.GetStringAsync("parkings/");
 			var res = JsonSerializer.Deserialize<IEnumerable<Parking>>(response, options);
+			return res;
+		}
+
+		/// <summary>
+		/// Получает детальную информацию о праковке.
+		/// </summary>
+		/// <returns>Детальная информация о парковке.</returns>
+		public async Task<DetailParking> Get(int id)
+		{
+			var client = GetClient();
+			var response = await client.GetStringAsync("parkings/" + id);
+			
+			var res = JsonSerializer.Deserialize<DetailParking>(response, options);
 			return res;
 		}
 	}
