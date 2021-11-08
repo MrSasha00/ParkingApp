@@ -32,7 +32,8 @@ namespace TestApp
 		/// <returns></returns>
 		private HttpClient GetClient()
 		{
-			var client = new HttpClient {BaseAddress = Url};
+			var url = new Uri("http://167.172.39.93/api/v1/");
+			var client = new HttpClient {BaseAddress = url};
 			client.DefaultRequestHeaders.Add("Accept", "application/json");
 			return client;
 		}
@@ -45,8 +46,7 @@ namespace TestApp
 		{
 			var client = GetClient();
 			var response = await client.GetStringAsync("parkings/");
-			var res = JsonSerializer.Deserialize<IEnumerable<Parking>>(response, options);
-			return res;
+			return JsonSerializer.Deserialize<IEnumerable<Parking>>(response, options);
 		}
 
 		/// <summary>
@@ -57,7 +57,6 @@ namespace TestApp
 		{
 			var client = GetClient();
 			var response = await client.GetStringAsync("parkings/" + id);
-			
 			var res = JsonSerializer.Deserialize<DetailParking>(response, options);
 			return res;
 		}
