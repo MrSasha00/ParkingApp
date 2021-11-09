@@ -11,7 +11,7 @@ namespace ParkingApp.Pages
 		/// <summary>
 		/// Вспомогательная модель.
 		/// </summary>
-		private ApplicationViewModel ViewModel { get; set; }
+		public ApplicationViewModel ViewModel { get; set; }
 
 		/// <summary>
 		/// Конструктор.
