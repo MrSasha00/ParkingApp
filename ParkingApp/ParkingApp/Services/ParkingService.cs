@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using TestApp.Models;
+using ParkingApp.Models;
 
-
-namespace TestApp
+namespace ParkingApp.Services
 {
 	/// <summary>
 	/// Сервис для работы с API.
@@ -16,12 +15,12 @@ namespace TestApp
 		/// <summary>
 		/// Строка подключения.
 		/// </summary>
-		private Uri Url = new Uri("http://167.172.39.93/api/v1/");
+		private readonly Uri _url = new Uri("http://167.172.39.93/api/v1/");
 
 		/// <summary>
 		/// Настройка сериализатора.
 		/// </summary>
-		JsonSerializerOptions options = new JsonSerializerOptions
+		readonly JsonSerializerOptions _options = new JsonSerializerOptions
 		{
 			PropertyNameCaseInsensitive = true,
 		};
@@ -29,11 +28,10 @@ namespace TestApp
 		/// <summary>
 		/// Настраивает http клиент.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>Http-клиент</returns>
 		private HttpClient GetClient()
 		{
-			var url = new Uri("http://167.172.39.93/api/v1/");
-			var client = new HttpClient {BaseAddress = url};
+			var client = new HttpClient {BaseAddress = _url};
 			client.DefaultRequestHeaders.Add("Accept", "application/json");
 			return client;
 		}
@@ -46,7 +44,7 @@ namespace TestApp
 		{
 			var client = GetClient();
 			var response = await client.GetStringAsync("parkings/");
-			return JsonSerializer.Deserialize<IEnumerable<Parking>>(response, options);
+			return JsonSerializer.Deserialize<IEnumerable<Parking>>(response, _options);
 		}
 
 		/// <summary>
@@ -57,8 +55,7 @@ namespace TestApp
 		{
 			var client = GetClient();
 			var response = await client.GetStringAsync("parkings/" + id);
-			var res = JsonSerializer.Deserialize<DetailParking>(response, options);
-			return res;
+			return JsonSerializer.Deserialize<DetailParking>(response, _options);
 		}
 	}
 }

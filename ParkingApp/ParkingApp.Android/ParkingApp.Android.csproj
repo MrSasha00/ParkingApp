@@ -7,7 +7,7 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>TestApp.Android</RootNamespace>
-    <AssemblyName>TestApp.Android</AssemblyName>
+    <AssemblyName>ParkingApp.Android</AssemblyName>
     <AndroidApplication>True</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
@@ -71,9 +71,9 @@
     <AndroidResource Include="Resources\values\colors.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TestApp\TestApp.csproj">
-      <Project>{BEF03913-4C8F-45B3-89A4-B50CA95DC48D}</Project>
-      <Name>TestApp</Name>
+    <ProjectReference Include="..\ParkingApp\ParkingApp.csproj">
+      <Project>{196f691e-f490-44d3-8b0b-a054b3efa863}</Project>
+      <Name>ParkingApp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
