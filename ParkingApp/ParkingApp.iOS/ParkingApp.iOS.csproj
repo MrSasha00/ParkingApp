@@ -10,7 +10,7 @@
         <OutputType>Exe</OutputType>
         <RootNamespace>TestApp.iOS</RootNamespace>
         <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-        <AssemblyName>TestApp.iOS</AssemblyName>
+        <AssemblyName>ParkingApp.iOS</AssemblyName>
         <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
