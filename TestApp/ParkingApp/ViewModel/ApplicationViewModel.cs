@@ -2,10 +2,12 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TestApp.Models;
+using ParkingApp.Models;
+using ParkingApp.Pages;
+using ParkingApp.Services;
 using Xamarin.Forms;
 
-namespace TestApp
+namespace ParkingApp.ViewModel
 {
 	/// <summary>
 	/// Вспомогателная модель для отображения данных.

@@ -71,9 +71,9 @@
     <AndroidResource Include="Resources\values\colors.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TestApp\TestApp.csproj">
-      <Project>{BEF03913-4C8F-45B3-89A4-B50CA95DC48D}</Project>
-      <Name>TestApp</Name>
+    <ProjectReference Include="..\ParkingApp\ParkingApp.csproj">
+      <Project>{196f691e-f490-44d3-8b0b-a054b3efa863}</Project>
+      <Name>ParkingApp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
