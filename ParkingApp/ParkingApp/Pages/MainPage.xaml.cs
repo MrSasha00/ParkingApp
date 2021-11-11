@@ -1,4 +1,5 @@
-﻿using ParkingApp.ViewModel;
+﻿using System;
+using ParkingApp.ViewModel;
 using Xamarin.Forms;
 
 namespace ParkingApp.Pages
@@ -28,8 +29,13 @@ namespace ParkingApp.Pages
 		/// </summary>
 		protected override async void OnAppearing()
 		{
-			await ViewModel.GetParkings();
+			await ViewModel.GetParkingPlaces();
 			base.OnAppearing();
+		}
+
+		private async void ButtonUpdateList(object sender, EventArgs e)
+		{
+			await ViewModel.GetParkingPlaces();
 		}
 	}
 }

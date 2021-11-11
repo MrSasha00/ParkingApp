@@ -47,9 +47,9 @@
 				</Label.FormattedText>
 			</Label>
 			<Image Source="{Binding Path=ViewModel.SelectedDetailParking.Camera}" AbsoluteLayout.LayoutBounds="0,0,1,1"   AbsoluteLayout.LayoutFlags="All" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFill"/>
-			<StackLayout IsVisible="{Binding ViewModel.IsBusy}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Padding="20">
+			<StackLayout IsVisible="{Binding ViewModel.IsRefreshing}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Padding="20">
 				<Label Text="Загрузка данных..." TextColor="Gray" HorizontalOptions="Center" />
-				<ActivityIndicator IsRunning="{Binding ViewModel.IsBusy}" Color="Red" ></ActivityIndicator>
+				<ActivityIndicator IsRunning="{Binding ViewModel.IsRefreshing}" Color="Red" ></ActivityIndicator>
 			</StackLayout>
 		</StackLayout>
 	</StackLayout>
