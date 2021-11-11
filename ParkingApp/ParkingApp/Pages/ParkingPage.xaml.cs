@@ -1,4 +1,6 @@
-﻿using ParkingApp.ViewModel;
+﻿using System;
+using System.Threading;
+using ParkingApp.ViewModel;
 using Xamarin.Forms;
 
 namespace ParkingApp.Pages
@@ -31,6 +33,15 @@ namespace ParkingApp.Pages
 		{
 			await ViewModel.GetParkById();
 			base.OnAppearing();
+		}
+
+		/// <summary>
+		/// Обновление страницы.
+		/// </summary>
+		private async void Refresh(object sender, EventArgs e)
+		{
+			await ViewModel.GetParkById();
+			RefreshView.IsRefreshing = false;
 		}
 	}
 }

@@ -6,7 +6,10 @@
 		<ListView x:Name="ParkingList"
 			SelectedItem="{Binding SelectedParking, Mode=TwoWay}"
 			HasUnevenRows="True"
-			ItemsSource="{Binding ParkingPlaces}">
+			ItemsSource="{Binding ParkingPlaces}"
+			IsPullToRefreshEnabled="True"
+			RefreshCommand="{Binding RefreshCommand}"
+			IsRefreshing="{Binding IsRefreshing}">
 			<ListView.ItemTemplate>
 				<DataTemplate>
 					<ViewCell>
@@ -35,9 +38,5 @@
 				</DataTemplate>
 			</ListView.ItemTemplate>
 		</ListView>
-		<StackLayout IsVisible="{Binding IsBusy}" HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Padding="20">
-			<Label Text="Загрузка данных..." TextColor="Gray" HorizontalOptions="Center" />
-			<ActivityIndicator IsRunning="{Binding IsBusy}" Color="Red" ></ActivityIndicator>
-		</StackLayout>
 	</StackLayout>
 </ContentPage>

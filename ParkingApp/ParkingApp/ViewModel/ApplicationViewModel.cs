@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using ParkingApp.Models;
@@ -15,16 +16,6 @@ namespace ParkingApp.ViewModel
 	public class ApplicationViewModel : INotifyPropertyChanged
 	{
 		#region Fields/Private
-
-		/// <summary>
-		/// Флаг инициализации.
-		/// </summary>
-		private bool _isInit;
-
-		/// <summary>
-		/// Флаг загрузки.
-		/// </summary>
-		private bool _isBusy;
 
 		/// <summary>
 		/// Идентификатор выбранной парковки.
@@ -50,6 +41,11 @@ namespace ParkingApp.ViewModel
 		/// Для навигации.
 		/// </summary>
 		private INavigation _navigation;
+
+		/// <summary>
+		/// Флаг загрузки.
+		/// </summary>
+		private bool _isRefreshing;
 
 		#endregion
 
@@ -104,15 +100,29 @@ namespace ParkingApp.ViewModel
 		}
 
 		/// <summary>
+		/// Команда для обновления.
+		/// </summary>
+		public ICommand RefreshCommand
+		{
+			get {
+				return new Command(async () =>
+				{
+					IsRefreshing = true;
+					await GetParkingPlaces();
+					IsRefreshing = false;
+				});
+			}
+		}
+
+		/// <summary>
 		/// Флаг загрузки.
 		/// </summary>
-		public bool IsBusy
-		{
-			get { return _isBusy; }
-			set
-			{
-				_isBusy = value;
-				NotifyPropertyChanged("IsBusy");
+		public bool IsRefreshing 
+		{ 
+			get { return _isRefreshing; }
+			set {
+				_isRefreshing = value;
+				NotifyPropertyChanged("IsRefreshing");
 			}
 		}
 
@@ -150,19 +160,14 @@ namespace ParkingApp.ViewModel
 		/// <summary>
 		/// Получает все парковки.
 		/// </summary>
-		public async Task GetParkings()
+		public async Task GetParkingPlaces()
 		{
-			if (_isInit)
-				return;
-			IsBusy = true;
-			var parkings = await _parkingService.GetAll();
-			foreach (var parking in parkings)
+			RemoveItems();
+			var parkingPlaces = await _parkingService.GetAll();
+			foreach (var parking in parkingPlaces)
 			{
 				ParkingPlaces.Add(parking);
 			}
-
-			IsBusy = false;
-			_isInit = true;
 		}
 
 		/// <summary>
@@ -170,10 +175,21 @@ namespace ParkingApp.ViewModel
 		/// </summary>
 		public async Task GetParkById()
 		{
-			IsBusy = true;
+			IsRefreshing = true;
 			SelectedDetailParking = await _parkingService.Get(_selectedId);
 			NotifyPropertyChanged("SelectedDetailParking");
-			IsBusy = false;
+			IsRefreshing = false;
+		}
+
+		/// <summary>
+		/// Удаляет все элементы из списка.
+		/// </summary>
+		private void RemoveItems()
+		{
+			foreach (var parkingPlace in ParkingPlaces.ToList())
+			{
+				ParkingPlaces.Remove(parkingPlace);
+			}
 		}
 
 		#endregion
