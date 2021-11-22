@@ -28,4 +28,11 @@
         <SubType>Code</SubType>
       </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Roboto-Light.ttf" />
+      <EmbeddedResource Include="Resources\Roboto-Light.ttf" />
+      <None Remove="Resources\Roboto-Medium.ttf" />
+      <EmbeddedResource Include="Resources\Roboto-Medium.ttf" />
+    </ItemGroup>
 </Project>

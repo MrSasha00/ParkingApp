@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ParkingApp.Models;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ParkingApp.Services
 {
@@ -13,9 +15,14 @@ namespace ParkingApp.Services
 	public class ParkingService
 	{
 		/// <summary>
+		/// Текстовая строка подключения.
+		/// </summary>
+		private static readonly string connectionString = "http://89.108.88.254";
+
+		/// <summary>
 		/// Строка подключения.
 		/// </summary>
-		private readonly Uri _url = new Uri("http://167.172.39.93/api/v1/");
+		private readonly Uri _url = new Uri("http://89.108.88.254/api/v1/");
 
 		/// <summary>
 		/// Настройка сериализатора.
@@ -43,8 +50,16 @@ namespace ParkingApp.Services
 		public async Task<IEnumerable<Parking>> GetAll()
 		{
 			var client = GetClient();
-			var response = await client.GetStringAsync("parkings/");
-			return JsonSerializer.Deserialize<IEnumerable<Parking>>(response, _options);
+			var httpResponse = client.GetAsync("parkings/");
+			using (var response = await httpResponse)
+			{
+				if (response.IsSuccessStatusCode)
+				{
+					var contentSting = await response.Content.ReadAsStringAsync();
+					return JsonSerializer.Deserialize<IEnumerable<Parking>>(contentSting, _options);
+				}
+			}
+			return new List<Parking>();
 		}
 
 		/// <summary>
@@ -54,8 +69,21 @@ namespace ParkingApp.Services
 		public async Task<DetailParking> Get(int id)
 		{
 			var client = GetClient();
-			var response = await client.GetStringAsync("parkings/" + id);
-			return JsonSerializer.Deserialize<DetailParking>(response, _options);
+			var httpResponse = client.GetAsync("parkings/" + id);
+			using (var response = await httpResponse)
+			{
+				if (response.IsSuccessStatusCode)
+				{
+					var contentSting = await response.Content.ReadAsStringAsync();
+					var detailParking = JsonSerializer.Deserialize<DetailParking>(contentSting, _options);
+					if (detailParking != null)
+					{
+						detailParking.Camera = connectionString + detailParking.Camera;
+						return detailParking;
+					}
+				}
+			}
+			throw new NullReferenceException();
 		}
 	}
 }

@@ -18,6 +18,11 @@ namespace ParkingApp.ViewModel
 		#region Fields/Private
 
 		/// <summary>
+		/// Список парковок.
+		/// </summary>
+		private ObservableCollection<Parking> _parkingPlaces;
+
+		/// <summary>
 		/// Идентификатор выбранной парковки.
 		/// </summary>
 		private int _selectedId;
@@ -54,7 +59,8 @@ namespace ParkingApp.ViewModel
 		/// <summary>
 		/// Список парковок. 
 		/// </summary>
-		public ObservableCollection<Parking> ParkingPlaces { get; set; }
+		public ObservableCollection<Parking> ParkingPlaces
+		{ get; set; }
 
 		/// <summary>
 		/// Выбранная парковка.
@@ -85,13 +91,6 @@ namespace ParkingApp.ViewModel
 				if (selectedParking != value)
 				{
 					_selectedId = value.Id;
-					var tempParking = new Parking
-					{
-						Id = value.Id,
-						Address = value.Address,
-						FreeParkingSpaces = value.FreeParkingSpaces,
-						TotalParkingSpaces = value.TotalParkingSpaces
-					};
 					_selectedDetailParking = null;
 					NotifyPropertyChanged("SelectedParking");
 					Navigation.PushAsync(new ParkingPage(this));
@@ -110,21 +109,29 @@ namespace ParkingApp.ViewModel
 					IsRefreshing = true;
 					await GetParkingPlaces();
 					IsRefreshing = false;
+					NotifyPropertyChanged("RefreshCommand");
 				});
 			}
 		}
 
 		/// <summary>
+		/// Команда для поиска в коллекци.
+		/// </summary>
+		public ICommand PerformSearch => new Command<string>(SelectByAddress);
+
+		/// <summary>
 		/// Флаг загрузки.
 		/// </summary>
-		public bool IsRefreshing 
-		{ 
+		public bool IsRefreshing
+		{
 			get { return _isRefreshing; }
-			set {
+			set
+			{
 				_isRefreshing = value;
 				NotifyPropertyChanged("IsRefreshing");
 			}
 		}
+
 
 		#endregion
 
@@ -153,8 +160,9 @@ namespace ParkingApp.ViewModel
 		/// </summary>
 		public ApplicationViewModel()
 		{
-			ParkingPlaces = new ObservableCollection<Parking>();
+			_parkingPlaces = new ObservableCollection<Parking>();
 			_parkingService = new ParkingService();
+			ParkingPlaces = new ObservableCollection<Parking>();
 		}
 
 		/// <summary>
@@ -162,10 +170,12 @@ namespace ParkingApp.ViewModel
 		/// </summary>
 		public async Task GetParkingPlaces()
 		{
-			RemoveItems();
+			_parkingPlaces.Clear();
+			ParkingPlaces.Clear();
 			var parkingPlaces = await _parkingService.GetAll();
 			foreach (var parking in parkingPlaces)
 			{
+				_parkingPlaces.Add(parking);
 				ParkingPlaces.Add(parking);
 			}
 		}
@@ -182,16 +192,20 @@ namespace ParkingApp.ViewModel
 		}
 
 		/// <summary>
-		/// Удаляет все элементы из списка.
+		/// Фильтрует коллекцию по входящей строке.
 		/// </summary>
-		private void RemoveItems()
+		/// <param name="query"></param>
+		public void SelectByAddress(string query)
 		{
-			foreach (var parkingPlace in ParkingPlaces.ToList())
+			ParkingPlaces.Clear();
+			var res = _parkingPlaces.ToList().Where(x => x.Address.ToLower().Contains(query.ToLower()));
+			foreach (var parking in res)
 			{
-				ParkingPlaces.Remove(parkingPlace);
+				ParkingPlaces.Add(parking);
 			}
 		}
 
 		#endregion
+		
 	}
 }
