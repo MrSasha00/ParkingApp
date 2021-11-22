@@ -2,19 +2,11 @@
 
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ParkingApp.Pages.ParkingPage">
+             x:Class="ParkingApp.Pages.ParkingPage" Title="{Binding Path=ViewModel.SelectedDetailParking.Address}">
 	<RefreshView x:Name="RefreshView" Refreshing="Refresh">
 		<ScrollView>
 			<StackLayout>
-				<Label Padding="3">
-					<Label.FormattedText>
-						<FormattedString>
-							<Span Text="Адрес: "></Span>
-							<Span Text="{Binding Path=ViewModel.SelectedDetailParking.Address}" FontSize="18"></Span>
-						</FormattedString>
-					</Label.FormattedText>
-				</Label>
-				<Label Padding="3">
+				<Label Padding="3, 1" FontFamily="">
 					<Label.FormattedText>
 						<FormattedString>
 							<Span Text="Всего мест: "></Span>
@@ -22,7 +14,7 @@
 						</FormattedString>
 					</Label.FormattedText>
 				</Label>
-				<Label Padding="3">
+				<Label Padding="3, 1">
 					<Label.FormattedText>
 						<FormattedString>
 							<Span Text="Свободных мест: "></Span>
@@ -30,7 +22,7 @@
 						</FormattedString>
 					</Label.FormattedText>
 				</Label>
-				<Label Padding="3">
+				<Label Padding="3, 1">
 					<Label.FormattedText>
 						<FormattedString>
 							<Span Text="X: "></Span>
@@ -38,7 +30,7 @@
 						</FormattedString>
 					</Label.FormattedText>
 				</Label>
-				<Label Padding="3">
+				<Label Padding="3, 1">
 					<Label.FormattedText>
 						<FormattedString>
 							<Span Text="Y: "></Span>

@@ -31,11 +31,23 @@ namespace ParkingApp.Pages
 		{
 			await ViewModel.GetParkingPlaces();
 			base.OnAppearing();
+			ParkingSearch.Text = string.Empty;
 		}
 
-		private async void ButtonUpdateList(object sender, EventArgs e)
+		/// <summary>
+		/// Фильтрует коллекцию по адресу.
+		/// </summary>
+		private void UpdateSearch_Event(object sender, EventArgs e)
 		{
-			await ViewModel.GetParkingPlaces();
+			ViewModel.SelectByAddress(ParkingSearch.Text);
+		}
+
+		/// <summary>
+		/// Событие при обновлении скписка.
+		/// </summary>
+		private void ParkingList_OnRefreshing(object sender, EventArgs e)
+		{
+			ParkingSearch.Text = string.Empty;
 		}
 	}
 }
