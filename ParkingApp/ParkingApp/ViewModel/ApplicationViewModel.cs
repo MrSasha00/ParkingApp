@@ -132,6 +132,7 @@ namespace ParkingApp.ViewModel
 			}
 		}
 
+		public byte[] Photo { get; set; }
 
 		#endregion
 
@@ -203,6 +204,16 @@ namespace ParkingApp.ViewModel
 			{
 				ParkingPlaces.Add(parking);
 			}
+		}
+
+		/// <summary>
+		/// Фильтрует коллекцию по входящей строке.
+		/// </summary>
+		/// <param name="query"></param>
+		public async Task UpdatePhoto()
+		{
+			Photo = await _parkingService.GetPhoto(_selectedDetailParking.Camera);
+			NotifyPropertyChanged("PhotoUpdated");
 		}
 
 		#endregion

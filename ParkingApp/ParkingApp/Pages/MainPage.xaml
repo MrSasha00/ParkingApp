@@ -23,6 +23,7 @@
 					<ViewCell>
 						<ViewCell.View>
 							<StackLayout>
+								<Label Text="{Binding Id}" FontSize="17"  Padding="3, 1" FontFamily="RobotoMedium"/>
 								<Label Text="{Binding Address}" FontSize="17"  Padding="3, 1" FontFamily="RobotoMedium"/>
 								<Label Padding="3, 1" FontSize="Medium" FontFamily="RobotoLight">
 									<Label.FormattedText>
