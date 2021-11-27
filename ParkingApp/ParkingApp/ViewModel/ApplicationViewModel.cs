@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -132,6 +133,9 @@ namespace ParkingApp.ViewModel
 			}
 		}
 
+		/// <summary>
+		/// Фото выбранной парковки.
+		/// </summary>
 		public byte[] Photo { get; set; }
 
 		#endregion
@@ -207,13 +211,29 @@ namespace ParkingApp.ViewModel
 		}
 
 		/// <summary>
-		/// Фильтрует коллекцию по входящей строке.
+		/// Получает фото.
 		/// </summary>
-		/// <param name="query"></param>
 		public async Task UpdatePhoto()
 		{
 			Photo = await _parkingService.GetPhoto(_selectedDetailParking.Camera);
 			NotifyPropertyChanged("PhotoUpdated");
+		}
+
+		/// <summary>
+		/// Сортирует список.
+		/// </summary>
+		public void Sorting()
+		{
+			var sortableList = new List<Parking>(ParkingPlaces);
+			var orderedEnumerable = sortableList.OrderBy(x => x.Address).ToList();
+
+			for (int i = 0; i < orderedEnumerable.Count; i++)
+			{
+				ParkingPlaces.Move(ParkingPlaces.IndexOf(orderedEnumerable[i]), i);
+			}
+			// var sortingList = ParkingPlaces.ToList();
+			// ParkingPlaces = new ObservableCollection<Parking>(sortingList.OrderBy(i => i.Address));
+			NotifyPropertyChanged("ListSorted");
 		}
 
 		#endregion

@@ -41,5 +41,11 @@
 				</DataTemplate>
 			</ListView.ItemTemplate>
 		</ListView>
+		<StackLayout IsVisible="{Binding Path=IsRefreshing}"
+		             HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Padding="20">
+			<Label Text="Загрузка данных..." TextColor="Gray" HorizontalOptions="Center" />
+			<ActivityIndicator IsRunning="{Binding IsRefreshing}" Color="Red" >
+			</ActivityIndicator>
+		</StackLayout>
 	</StackLayout>
 </ContentPage>

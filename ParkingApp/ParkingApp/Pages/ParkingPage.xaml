@@ -10,7 +10,7 @@
 	<RefreshView x:Name="RefreshView" Refreshing="Refresh">
 		<ScrollView>
 			<StackLayout>
-				<Label Padding="3, 1" FontFamily="">
+				<Label Padding="6, 2" FontSize="17" FontFamily="RobotoMedium">
 					<Label.FormattedText>
 						<FormattedString>
 							<Span Text="Всего мест: "></Span>
@@ -18,7 +18,7 @@
 						</FormattedString>
 					</Label.FormattedText>
 				</Label>
-				<Label Padding="3, 1">
+				<Label Padding="6, 2" FontSize="17" FontFamily="RobotoMedium">
 					<Label.FormattedText>
 						<FormattedString>
 							<Span Text="Свободных мест: "></Span>
@@ -26,19 +26,13 @@
 						</FormattedString>
 					</Label.FormattedText>
 				</Label>
-				<Label Padding="3, 1">
+				<Label Padding="6, 2" FontSize="Medium" FontFamily="RobotoLight">
 					<Label.FormattedText>
 						<FormattedString>
-							<Span Text="X: "></Span>
-							<Span Text="{Binding Path=SelectedDetailParking.CoordX}"></Span>
-						</FormattedString>
-					</Label.FormattedText>
-				</Label>
-				<Label Padding="3, 1">
-					<Label.FormattedText>
-						<FormattedString>
-							<Span Text="Y: "></Span>
-							<Span Text="{Binding Path=SelectedDetailParking.CoordY}"></Span>
+							<Span Text="X: " ></Span>
+							<Span Text="{Binding SelectedDetailParking.CoordX}"></Span>
+							<Span Text=" Y: "></Span>
+							<Span Text="{Binding  SelectedDetailParking.CoordY}"></Span>
 						</FormattedString>
 					</Label.FormattedText>
 				</Label>

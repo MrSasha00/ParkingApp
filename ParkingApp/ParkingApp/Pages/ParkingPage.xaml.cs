@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using System.Threading;
 using ParkingApp.ViewModel;
 using Xamarin.Forms;
 
@@ -90,7 +88,7 @@ namespace ParkingApp.Pages
 		}
 
 		/// <summary>
-		/// 
+		/// Останавливает таймер.
 		/// </summary>
 		private void StopTimer()
 		{

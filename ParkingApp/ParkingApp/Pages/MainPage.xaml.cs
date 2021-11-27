@@ -30,6 +30,7 @@ namespace ParkingApp.Pages
 		protected override async void OnAppearing()
 		{
 			await ViewModel.GetParkingPlaces();
+			ViewModel.Sorting();
 			base.OnAppearing();
 			ParkingSearch.Text = string.Empty;
 		}
@@ -43,7 +44,7 @@ namespace ParkingApp.Pages
 		}
 
 		/// <summary>
-		/// Событие при обновлении скписка.
+		/// Событие при обновлении списка.
 		/// </summary>
 		private void ParkingList_OnRefreshing(object sender, EventArgs e)
 		{
