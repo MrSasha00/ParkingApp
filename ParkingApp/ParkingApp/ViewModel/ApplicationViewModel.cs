@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.AspNetCore.SignalR.Client;
 using ParkingApp.Models;
 using ParkingApp.Pages;
 using ParkingApp.Services;
@@ -17,6 +18,11 @@ namespace ParkingApp.ViewModel
 	public class ApplicationViewModel : INotifyPropertyChanged
 	{
 		#region Fields/Private
+
+		/// <summary>
+		/// Хаб webSoket.
+		/// </summary>
+		private HubConnection _hubConnection;
 
 		/// <summary>
 		/// Список парковок.
@@ -169,6 +175,11 @@ namespace ParkingApp.ViewModel
 			_parkingPlaces = new ObservableCollection<Parking>();
 			_parkingService = new ParkingService();
 			ParkingPlaces = new ObservableCollection<Parking>();
+			// TODO: добавить url.
+			_hubConnection = new HubConnectionBuilder()
+				.WithUrl("URL")
+				.Build();
+			_hubConnection.On<int, int>("Receive", UpdateByHub);
 		}
 
 		/// <summary>
@@ -238,7 +249,7 @@ namespace ParkingApp.ViewModel
 		}
 
 		/// <summary>
-		/// Сортирует список.
+		/// Обновляет данные в списке.
 		/// </summary>
 		public async Task UpdateList()
 		{
@@ -257,6 +268,18 @@ namespace ParkingApp.ViewModel
 			NotifyPropertyChanged("ListUpdated");
 		}
 
+		private void UpdateByHub(int id, int newFreeSpaces)
+		{
+			if (id == _selectedDetailParking?.Id && _selectedDetailParking != null)
+			{
+				_selectedDetailParking.FreeParkingSpaces = newFreeSpaces;
+				Notify?.Invoke(newFreeSpaces);
+			}
+		}
+
+		public delegate void AccountHandler(int message);
+		public event AccountHandler Notify;  
+		
 		#endregion
 		
 	}

@@ -83,7 +83,7 @@ namespace ParkingApp.Pages
 		}
 
 		/// <summary>
-		/// Обновляет фото в форме.
+		/// Обновляет список.
 		/// </summary>
 		private async void UpdateParkingPlaces(object sender, EventArgs e)
 		{
