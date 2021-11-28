@@ -109,6 +109,7 @@ namespace ParkingApp.ViewModel
 				{
 					IsRefreshing = true;
 					await GetParkingPlaces();
+					Sorting();
 					IsRefreshing = false;
 					NotifyPropertyChanged("RefreshCommand");
 				});
@@ -183,6 +184,8 @@ namespace ParkingApp.ViewModel
 				_parkingPlaces.Add(parking);
 				ParkingPlaces.Add(parking);
 			}
+			Sorting();
+			NotifyPropertyChanged("Added");
 		}
 
 		/// <summary>
@@ -226,14 +229,32 @@ namespace ParkingApp.ViewModel
 		{
 			var sortableList = new List<Parking>(ParkingPlaces);
 			var orderedEnumerable = sortableList.OrderBy(x => x.Address).ToList();
-
-			for (int i = 0; i < orderedEnumerable.Count; i++)
+			ParkingPlaces.Clear();
+			foreach (var parkingPlace in orderedEnumerable)
 			{
-				ParkingPlaces.Move(ParkingPlaces.IndexOf(orderedEnumerable[i]), i);
+				ParkingPlaces.Add(parkingPlace);
 			}
-			// var sortingList = ParkingPlaces.ToList();
-			// ParkingPlaces = new ObservableCollection<Parking>(sortingList.OrderBy(i => i.Address));
 			NotifyPropertyChanged("ListSorted");
+		}
+
+		/// <summary>
+		/// Сортирует список.
+		/// </summary>
+		public async Task UpdateList()
+		{
+			var updatedList = (List<Parking>)await _parkingService.GetAll();
+			foreach (var updatedParking in updatedList)
+			{
+				foreach (var parkingPlace in ParkingPlaces)
+				{
+					if (updatedParking.Id == parkingPlace.Id)
+					{
+						parkingPlace.FreeParkingSpaces = updatedParking.FreeParkingSpaces;
+					}
+				}
+			}
+			Sorting();
+			NotifyPropertyChanged("ListUpdated");
 		}
 
 		#endregion
