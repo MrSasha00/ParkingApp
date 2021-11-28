@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.IO;
 using ParkingApp.ViewModel;
 using Xamarin.Forms;
 
@@ -13,7 +13,12 @@ namespace ParkingApp.Pages
 		/// <summary>
 		/// Вспомогательная модель.
 		/// </summary>
-		public ApplicationViewModel ViewModel { get; set; }
+		private ApplicationViewModel ViewModel { get; set; }
+
+		/// <summary>
+		/// Таймер для обновления.
+		/// </summary>
+		private static System.Timers.Timer _updaterTimer;
 
 		/// <summary>
 		/// Конструктор.
@@ -23,7 +28,7 @@ namespace ParkingApp.Pages
 		{
 			InitializeComponent();
 			ViewModel = viewModel;
-			BindingContext = this;
+			BindingContext = ViewModel;
 		}
 
 		/// <summary>
@@ -32,7 +37,19 @@ namespace ParkingApp.Pages
 		protected override async void OnAppearing()
 		{
 			await ViewModel.GetParkById();
+			await ViewModel.UpdatePhoto();
+			Image.Source = ImageSource.FromStream(() => new MemoryStream(ViewModel.Photo));
+			SetTimer();
 			base.OnAppearing();
+		}
+
+		/// <summary>
+		/// Срабатывает при уничтожении страницы.
+		/// </summary>
+		protected override void OnDisappearing()
+		{
+			StopTimer();
+			base.OnDisappearing();
 		}
 
 		/// <summary>
@@ -42,6 +59,40 @@ namespace ParkingApp.Pages
 		{
 			await ViewModel.GetParkById();
 			RefreshView.IsRefreshing = false;
+		}
+
+		/// <summary>
+		/// Обновляет фото в форме.
+		/// </summary>
+		private async void UpdatePhoto(object sender, EventArgs e)
+		{
+			await ViewModel.UpdatePhoto();
+			await ViewModel.GetParkById();
+			Device.BeginInvokeOnMainThread(() =>
+				{
+					Image.Source = ImageSource.FromStream(() => new MemoryStream(ViewModel.Photo));
+					FreePlacesSpan.Text = ViewModel.SelectedDetailParking.FreeParkingSpaces.ToString();
+				}
+			);
+		}
+
+		/// <summary>
+		/// Таймер для обновления.
+		/// </summary>
+		private void SetTimer()
+		{
+			_updaterTimer = new System.Timers.Timer(10000);
+			_updaterTimer.Elapsed += UpdatePhoto;
+			_updaterTimer.AutoReset = true;
+			_updaterTimer.Enabled = true;
+		}
+
+		/// <summary>
+		/// Останавливает таймер.
+		/// </summary>
+		private void StopTimer()
+		{
+			_updaterTimer.Stop();
 		}
 	}
 }

@@ -17,12 +17,12 @@ namespace ParkingApp.Services
 		/// <summary>
 		/// Текстовая строка подключения.
 		/// </summary>
-		private static readonly string connectionString = "http://89.108.88.254";
+		private static readonly string connectionString = "http://89.108.88.254:81";
 
 		/// <summary>
 		/// Строка подключения.
 		/// </summary>
-		private readonly Uri _url = new Uri("http://89.108.88.254/api/v1/");
+		private readonly Uri _url = new Uri("http://89.108.88.254:81/api/v1/");
 
 		/// <summary>
 		/// Настройка сериализатора.
@@ -84,6 +84,16 @@ namespace ParkingApp.Services
 				}
 			}
 			throw new NullReferenceException();
+		}
+
+		/// <summary>
+		/// Новое фото.
+		/// </summary>
+		/// <returns>Детальная информация о парковке.</returns>
+		public async Task<byte[]> GetPhoto(string url)
+		{
+			var client = GetClient();
+			return await client.GetByteArrayAsync(url);
 		}
 	}
 }

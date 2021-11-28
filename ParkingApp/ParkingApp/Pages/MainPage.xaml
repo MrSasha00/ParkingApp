@@ -23,6 +23,7 @@
 					<ViewCell>
 						<ViewCell.View>
 							<StackLayout>
+								<Label Text="{Binding Id}" FontSize="17"  Padding="3, 1" FontFamily="RobotoMedium"/>
 								<Label Text="{Binding Address}" FontSize="17"  Padding="3, 1" FontFamily="RobotoMedium"/>
 								<Label Padding="3, 1" FontSize="Medium" FontFamily="RobotoLight">
 									<Label.FormattedText>
@@ -40,5 +41,11 @@
 				</DataTemplate>
 			</ListView.ItemTemplate>
 		</ListView>
+		<StackLayout IsVisible="{Binding Path=IsRefreshing}"
+		             HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Padding="20">
+			<Label Text="Загрузка данных..." TextColor="Gray" HorizontalOptions="Center" />
+			<ActivityIndicator IsRunning="{Binding IsRefreshing}" Color="Red" >
+			</ActivityIndicator>
+		</StackLayout>
 	</StackLayout>
 </ContentPage>
