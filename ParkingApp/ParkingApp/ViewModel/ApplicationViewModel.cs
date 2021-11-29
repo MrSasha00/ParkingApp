@@ -9,6 +9,7 @@ using ParkingApp.Models;
 using ParkingApp.Pages;
 using ParkingApp.Services;
 using Xamarin.Forms;
+using System;
 
 namespace ParkingApp.ViewModel
 {
@@ -58,6 +59,11 @@ namespace ParkingApp.ViewModel
 		/// Флаг загрузки.
 		/// </summary>
 		private bool _isRefreshing;
+
+		/// <summary>
+		/// Флаг подключения.
+		/// </summary>
+		bool isConnected;
 
 		#endregion
 
@@ -145,6 +151,23 @@ namespace ParkingApp.ViewModel
 		/// </summary>
 		public byte[] Photo { get; set; }
 
+		/// </summary>
+		///Флаг подключение (может как-то будем обрабатывать)
+		/// </summary>
+		public bool IsConnected
+		{
+			get => isConnected;
+			set
+			{
+				if (isConnected != value)
+				{
+					isConnected = value;
+					//NotifyPropertyChanged("IsConnected");
+				}
+			}
+		}
+
+
 		#endregion
 
 		#region Events
@@ -175,11 +198,51 @@ namespace ParkingApp.ViewModel
 			_parkingPlaces = new ObservableCollection<Parking>();
 			_parkingService = new ParkingService();
 			ParkingPlaces = new ObservableCollection<Parking>();
-			// TODO: добавить url.
+
 			_hubConnection = new HubConnectionBuilder()
-				.WithUrl("URL")
+				.WithUrl("http://89.108.88.254:81/connect")
 				.Build();
-			_hubConnection.On<int, int>("Receive", UpdateByHub);
+
+			//Пытаемся переподключиться в случае сброса соединения 
+			_hubConnection.Closed += async (error) =>
+			{
+				IsConnected = false;
+				await Task.Delay(5000);
+				await Connect();
+			};
+
+			//Прием новой информации
+			_hubConnection.On<int, int>("Notify", UpdateByHub);
+		}
+		/// <summary>
+		/// Подключение к серверу
+		/// </summary>
+		public async Task Connect()
+		{
+			if (IsConnected)
+				return;
+			try
+			{
+				await _hubConnection.StartAsync();
+				IsConnected = true;
+
+			}
+			catch (Exception ex)
+			{
+				//Можно какой-нибудь обработчик придумать
+				//SendLocalMessage(String.Empty, $"Ошибка подключения: {ex.Message}");
+			}
+		}
+		/// </summary>
+		///Отключение от сервера
+		/// </summary>
+		public async Task Disconnect()
+		{
+			if (!IsConnected)
+				return;
+
+			await _hubConnection.StopAsync();
+			IsConnected = false;
 		}
 
 		/// <summary>
@@ -239,7 +302,8 @@ namespace ParkingApp.ViewModel
 		public void Sorting()
 		{
 			var sortableList = new List<Parking>(ParkingPlaces);
-			var orderedEnumerable = sortableList.OrderBy(x => x.Address).ToList();
+			//var orderedEnumerable = sortableList.OrderBy(x => x.Address).ToList();
+			var orderedEnumerable = sortableList.OrderBy(x => x.Id).ToList();
 			ParkingPlaces.Clear();
 			foreach (var parkingPlace in orderedEnumerable)
 			{
@@ -251,6 +315,9 @@ namespace ParkingApp.ViewModel
 		/// <summary>
 		/// Обновляет данные в списке.
 		/// </summary>
+
+		//По идее этот метод UpdateList можно вообще убрать т.к. после первого запроса всего списка при размещении MainView
+		//в UpdateByHub мы всегда поодерживаем актуальное состояние всего списка.
 		public async Task UpdateList()
 		{
 			var updatedList = (List<Parking>)await _parkingService.GetAll();
@@ -268,16 +335,46 @@ namespace ParkingApp.ViewModel
 			NotifyPropertyChanged("ListUpdated");
 		}
 
-		private void UpdateByHub(int id, int newFreeSpaces)
+		private void UpdateByHub(int parkingId, int newFreeSpaces)
 		{
-			if (id == _selectedDetailParking?.Id && _selectedDetailParking != null)
+
+			//if (parkingId == _selectedDetailParking?.Id && _selectedDetailParking != null)
+			//{
+			//    _selectedDetailParking.FreeParkingSpaces = newFreeSpaces;
+			//    Notify?.Invoke(newFreeSpaces);
+			//}
+
+			//Обновляем значение у данной парковки в общем списке
+			foreach (var updatedParking in _parkingPlaces)
 			{
-				_selectedDetailParking.FreeParkingSpaces = newFreeSpaces;
-				Notify?.Invoke(newFreeSpaces);
+				foreach (var parkingPlace in ParkingPlaces)
+				{
+					if (parkingId == parkingPlace.Id)
+					{
+						parkingPlace.FreeParkingSpaces = newFreeSpaces;
+					}
+				}
 			}
+
+			//Если праковка не выбрана или Id не совпадает, значит мы в главном меню и обновляем его
+			if (_selectedDetailParking == null || parkingId != _selectedDetailParking.Id)
+            {
+                Sorting();
+                NotifyPropertyChanged("ListUpdated");
+            }
+			//Иначе обновляем страницу с детальной парковкой и картинку
+            else
+            {				
+                _selectedDetailParking.FreeParkingSpaces = newFreeSpaces;
+                NotifyPropertyChanged("SelectedDetailParking");
+				//TODO: нужно добвить ещё обновление фотографии (так не работает)
+				//await UpdatePhoto();
+			}
+
+			
 		}
 
-		public delegate void AccountHandler(int message);
+        public delegate void AccountHandler(int message);
 		public event AccountHandler Notify;  
 		
 		#endregion

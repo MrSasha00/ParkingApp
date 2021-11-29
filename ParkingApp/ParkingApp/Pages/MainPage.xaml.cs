@@ -17,7 +17,7 @@ namespace ParkingApp.Pages
 		/// <summary>
 		/// Таймер для обновления.
 		/// </summary>
-		private static System.Timers.Timer _updaterTimer;
+		//private static System.Timers.Timer _updaterTimer;
 
 		/// <summary>
 		/// Конструктор.
@@ -36,14 +36,18 @@ namespace ParkingApp.Pages
 		{
 			await ViewModel.GetParkingPlaces();
 			ViewModel.Sorting();
-			SetTimer();
+			//SetTimer();
+			//Устанавливаем соединение для обновлений
+			await ViewModel.Connect();
 			base.OnAppearing();
 			ParkingSearch.Text = string.Empty;
 		}
 
-		protected override void OnDisappearing()
+		protected override async void OnDisappearing()
 		{
-			StopTimer();
+			//StopTimer();
+			//Разрываем соединение
+			await ViewModel.Disconnect();
 			base.OnDisappearing();
 		}
 
@@ -66,21 +70,21 @@ namespace ParkingApp.Pages
 		/// <summary>
 		/// Таймер для обновления.
 		/// </summary>
-		private void SetTimer()
-		{
-			_updaterTimer = new System.Timers.Timer(10000);
-			_updaterTimer.Elapsed += UpdateParkingPlaces;
-			_updaterTimer.AutoReset = true;
-			_updaterTimer.Enabled = true;
-		}
+		//private void SetTimer()
+		//{
+		//	_updaterTimer = new System.Timers.Timer(10000);
+		//	_updaterTimer.Elapsed += UpdateParkingPlaces;
+		//	_updaterTimer.AutoReset = true;
+		//	_updaterTimer.Enabled = true;
+		//}
 
 		/// <summary>
 		/// Останавливает таймер.
 		/// </summary>
-		private void StopTimer()
-		{
-			_updaterTimer.Stop();
-		}
+		//private void StopTimer()
+		//{
+		//	_updaterTimer.Stop();
+		//}
 
 		/// <summary>
 		/// Обновляет список.

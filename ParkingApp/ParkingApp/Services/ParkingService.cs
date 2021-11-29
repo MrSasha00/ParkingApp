@@ -78,7 +78,10 @@ namespace ParkingApp.Services
 					var detailParking = JsonSerializer.Deserialize<DetailParking>(contentSting, _options);
 					if (detailParking != null)
 					{
-						detailParking.Camera = connectionString + detailParking.Camera;
+						//Поле Camera больше не используем
+						//detailParking.Camera = connectionString + detailParking.Camera;
+						//За доступ к камерам отвечает сервер, поэтому у всех парковок шаблонный маршрут
+						detailParking.Camera = _url + "parkings/" + id + "/camera";
 						return detailParking;
 					}
 				}
