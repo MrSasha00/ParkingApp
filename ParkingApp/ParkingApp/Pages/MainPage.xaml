@@ -2,50 +2,68 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModel="clr-namespace:ParkingApp.ViewModel;assembly=ParkingApp"
-             x:Class="ParkingApp.Pages.MainPage" Title="Список парковок">
-	<ContentPage.BindingContext>
+             x:Class="ParkingApp.Pages.MainPage"
+             BackgroundColor="#2296F3">
+    
+    <NavigationPage.TitleView>
+        <StackLayout>
+            <Label Text="Список парковок" TextColor="White"  FontSize="26" FontFamily="RobotoMedium" Margin="2,0,0,0"/>
+        </StackLayout>
+    </NavigationPage.TitleView>
+
+    <ContentPage.BindingContext>
 		<viewModel:ApplicationViewModel />
 	</ContentPage.BindingContext>
-	<StackLayout>
-		<SearchBar x:Name="ParkingSearch" Placeholder="Введите адрес..." HorizontalTextAlignment="Center"                    
-		           SearchCommand="{Binding PerformSearch}"
-		           TextChanged="UpdateSearch_Event"></SearchBar>
-		<ListView x:Name="ParkingList"
-					SelectedItem="{Binding SelectedParking, Mode=TwoWay}"
-					HasUnevenRows="True"
-					ItemsSource="{Binding ParkingPlaces}"
-					IsPullToRefreshEnabled="True"
-					RefreshCommand="{Binding RefreshCommand}"
-					Refreshing="ParkingList_OnRefreshing"
-					IsRefreshing="{Binding IsRefreshing}">
-			<ListView.ItemTemplate>
-				<DataTemplate>
-					<ViewCell>
-						<ViewCell.View>
-							<StackLayout>
-								<Label Text="{Binding Id}" FontSize="17"  Padding="3, 1" FontFamily="RobotoMedium"/>
-								<Label Text="{Binding Address}" FontSize="17"  Padding="3, 1" FontFamily="RobotoMedium"/>
-								<Label Padding="3, 1" FontSize="Medium" FontFamily="RobotoLight">
-									<Label.FormattedText>
-										<FormattedString>
-											<Span Text="Мест свободно: " ></Span>
-											<Span Text="{Binding FreeParkingSpaces}"></Span>
-											<Span Text=" из "></Span>
-											<Span Text="{Binding  TotalParkingSpaces}"></Span>
-										</FormattedString>
-									</Label.FormattedText>
-								</Label>
-							</StackLayout>
-						</ViewCell.View>
-					</ViewCell>
-				</DataTemplate>
-			</ListView.ItemTemplate>
-		</ListView>
-		<StackLayout IsVisible="{Binding Path=IsRefreshing}"
-		             HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Padding="20">
-			<Label Text="Загрузка данных..." TextColor="Gray" HorizontalOptions="Center" />
-			<ActivityIndicator IsRunning="{Binding IsRefreshing}" Color="Red" >
-			</ActivityIndicator>
-		</StackLayout>
-	</StackLayout>
+
+    <StackLayout BackgroundColor="#2296F3" >
+        <Frame Padding="0" Margin="20,15,20,0" BackgroundColor="#E9E3E3" HasShadow="True" BorderColor="#DAD8D9" CornerRadius="15" HeightRequest="30">
+            <SearchBar x:Name="ParkingSearch" Placeholder="Введите адрес..."            
+                       SearchCommand="{Binding PerformSearch}"
+                       TextChanged="UpdateSearch_Event"/>
+        </Frame>
+
+        <StackLayout BackgroundColor="#F2EDED" Margin="0,10,0,0" >
+            
+
+            <ListView x:Name="ParkingList"
+                      SelectedItem="{Binding SelectedParking, Mode=TwoWay}"
+                      HasUnevenRows="True"
+                      ItemsSource="{Binding ParkingPlaces}"
+                      IsPullToRefreshEnabled="True"
+                      RefreshCommand="{Binding RefreshCommand}"
+                      Refreshing="ParkingList_OnRefreshing"
+                      IsRefreshing="{Binding IsRefreshing}"
+            >
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <ViewCell.View>
+                                <StackLayout>
+                                    <Label Text ="{Binding Address}"  FontSize="17"   FontFamily="RobotoMedium" Margin="20,20,20,0"/>
+                                    <Label FontSize="16" FontFamily="RobotoLight" Margin="20,0,20,20">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="Мест свободно: "></Span>
+                                                    <Span Text="{Binding FreeParkingSpaces}"></Span>
+                                                    <Span Text=" из "></Span>
+                                                    <Span Text="{Binding  TotalParkingSpaces}"></Span>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                </StackLayout>
+                            </ViewCell.View>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+        
+        <StackLayout IsVisible="{Binding Path=IsRefreshing}"
+                         HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Padding="20">
+            <Label Text="Загрузка данных..." TextColor="Gray" HorizontalOptions="Center" />
+            <ActivityIndicator IsRunning="{Binding IsRefreshing}" Color="Red" >
+            </ActivityIndicator>
+        </StackLayout>
+    </StackLayout>
+
 </ContentPage>
