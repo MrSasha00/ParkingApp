@@ -70,6 +70,16 @@ namespace ParkingApp.ViewModel
 		#region Fields/Public
 
 		/// <summary>
+		/// Делегат для события обновления.
+		/// </summary>
+		public delegate void UpdateParking(int message);
+
+		/// <summary>
+		/// Событие обновления.
+		/// </summary>
+		public event UpdateParking Notify;  
+
+		/// <summary>
 		/// Список парковок. 
 		/// </summary>
 		public ObservableCollection<Parking> ParkingPlaces
@@ -225,7 +235,6 @@ namespace ParkingApp.ViewModel
 			{
 				await _hubConnection.StartAsync();
 				IsConnected = true;
-
 			}
 			catch (Exception ex)
 			{
@@ -302,7 +311,6 @@ namespace ParkingApp.ViewModel
 		public void Sorting()
 		{
 			var sortableList = new List<Parking>(ParkingPlaces);
-			//var orderedEnumerable = sortableList.OrderBy(x => x.Address).ToList();
 			var orderedEnumerable = sortableList.OrderBy(x => x.Id).ToList();
 			ParkingPlaces.Clear();
 			foreach (var parkingPlace in orderedEnumerable)
@@ -313,71 +321,35 @@ namespace ParkingApp.ViewModel
 		}
 
 		/// <summary>
-		/// Обновляет данные в списке.
+		/// Обновление по уведомлениб от сервера.
 		/// </summary>
-
-		//По идее этот метод UpdateList можно вообще убрать т.к. после первого запроса всего списка при размещении MainView
-		//в UpdateByHub мы всегда поодерживаем актуальное состояние всего списка.
-		public async Task UpdateList()
-		{
-			var updatedList = (List<Parking>)await _parkingService.GetAll();
-			foreach (var updatedParking in updatedList)
-			{
-				foreach (var parkingPlace in ParkingPlaces)
-				{
-					if (updatedParking.Id == parkingPlace.Id)
-					{
-						parkingPlace.FreeParkingSpaces = updatedParking.FreeParkingSpaces;
-					}
-				}
-			}
-			Sorting();
-			NotifyPropertyChanged("ListUpdated");
-		}
-
+		/// <param name="parkingId">Идентфиикатор парковки.</param>
+		/// <param name="newFreeSpaces">Новое количество свободных парковочных мест.</param>
 		private void UpdateByHub(int parkingId, int newFreeSpaces)
 		{
-
-			//if (parkingId == _selectedDetailParking?.Id && _selectedDetailParking != null)
-			//{
-			//    _selectedDetailParking.FreeParkingSpaces = newFreeSpaces;
-			//    Notify?.Invoke(newFreeSpaces);
-			//}
-
 			//Обновляем значение у данной парковки в общем списке
-			foreach (var updatedParking in _parkingPlaces)
+			foreach (var parkingPlace in ParkingPlaces)
 			{
-				foreach (var parkingPlace in ParkingPlaces)
+				if (parkingId == parkingPlace.Id)
 				{
-					if (parkingId == parkingPlace.Id)
-					{
-						parkingPlace.FreeParkingSpaces = newFreeSpaces;
-					}
+					parkingPlace.FreeParkingSpaces = newFreeSpaces;
 				}
 			}
-
 			//Если праковка не выбрана или Id не совпадает, значит мы в главном меню и обновляем его
 			if (_selectedDetailParking == null || parkingId != _selectedDetailParking.Id)
-            {
-                Sorting();
-                NotifyPropertyChanged("ListUpdated");
-            }
-			//Иначе обновляем страницу с детальной парковкой и картинку
-            else
-            {				
-                _selectedDetailParking.FreeParkingSpaces = newFreeSpaces;
-                NotifyPropertyChanged("SelectedDetailParking");
-				//TODO: нужно добвить ещё обновление фотографии (так не работает)
-				//await UpdatePhoto();
+			{
+				Sorting();
+				NotifyPropertyChanged("ListUpdated");
 			}
-
-			
+			//Иначе обновляем страницу с детальной парковкой и картинку
+ 			else
+ 			{ 
+				_selectedDetailParking.FreeParkingSpaces = newFreeSpaces;
+				NotifyPropertyChanged("SelectedDetailParking");
+				Notify?.Invoke(newFreeSpaces);
+			}
 		}
 
-        public delegate void AccountHandler(int message);
-		public event AccountHandler Notify;  
-		
 		#endregion
-		
 	}
 }

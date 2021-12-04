@@ -62,7 +62,6 @@ namespace ParkingApp.Pages
 		private async void UpdatePhoto(int spaces)
 		{
 			await ViewModel.UpdatePhoto();
-			await ViewModel.GetParkById();
 			Device.BeginInvokeOnMainThread(() =>
 				{
 					Image.Source = ImageSource.FromStream(() => new MemoryStream(ViewModel.Photo));

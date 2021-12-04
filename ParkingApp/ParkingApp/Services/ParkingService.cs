@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
+
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -65,6 +65,7 @@ namespace ParkingApp.Services
 		/// <summary>
 		/// Получает детальную информацию о праковке.
 		/// </summary>
+		/// <param name="id">Идентификатор парковки.</param>
 		/// <returns>Детальная информация о парковке.</returns>
 		public async Task<DetailParking> Get(int id)
 		{
@@ -78,9 +79,6 @@ namespace ParkingApp.Services
 					var detailParking = JsonSerializer.Deserialize<DetailParking>(contentSting, _options);
 					if (detailParking != null)
 					{
-						//Поле Camera больше не используем
-						//detailParking.Camera = connectionString + detailParking.Camera;
-						//За доступ к камерам отвечает сервер, поэтому у всех парковок шаблонный маршрут
 						detailParking.Camera = _url + "parkings/" + id + "/camera";
 						return detailParking;
 					}
@@ -90,9 +88,10 @@ namespace ParkingApp.Services
 		}
 
 		/// <summary>
-		/// Новое фото.
+		/// Полкчает фото по ссылке.
 		/// </summary>
-		/// <returns>Детальная информация о парковке.</returns>
+		/// <param name="url">Адрес фотографии.</param>
+		/// <returns>Фото.</returns>
 		public async Task<byte[]> GetPhoto(string url)
 		{
 			var client = GetClient();
