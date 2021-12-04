@@ -3,42 +3,65 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModel="clr-namespace:ParkingApp.ViewModel;assembly=ParkingApp"
-             x:Class="ParkingApp.Pages.ParkingPage" Title="{Binding Path=SelectedDetailParking.Address}">
+             x:Class="ParkingApp.Pages.ParkingPage">
+	<NavigationPage.TitleView>
+		<StackLayout>
+			<Label>
+				<Label.FormattedText>
+					<FormattedString>
+						<Span Text="Парковка №" TextColor="White" FontSize="26" FontFamily="RobotoMedium" />
+						<Span Text="{Binding Path=SelectedDetailParking.Id}" TextColor="White" FontSize="26" FontFamily="RobotoMedium" />
+					</FormattedString>
+				</Label.FormattedText>
+			</Label>
+		</StackLayout>
+	</NavigationPage.TitleView>
+
 	<ContentPage.BindingContext>
 		<viewModel:ApplicationViewModel />
 	</ContentPage.BindingContext>
 	<RefreshView x:Name="RefreshView" Refreshing="Refresh">
 		<ScrollView>
 			<StackLayout>
-				<Label Padding="6, 2" FontSize="17" FontFamily="RobotoMedium">
+				<Grid Margin="0,10,20,10">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition />
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
+
+					<Label FontSize="17" FontFamily="RobotoMedium" Grid.Column="0" HorizontalTextAlignment="Center">
+						<Label.FormattedText>
+							<FormattedString>
+								<Span Text="Всего мест: "></Span>
+								<Span Text="{Binding Path=SelectedDetailParking.TotalParkingSpaces}"></Span>
+							</FormattedString>
+						</Label.FormattedText>
+					</Label>
+
+					<Label FontSize="17" FontFamily="RobotoMedium" Grid.Column="1" HorizontalTextAlignment="Center">
+						<Label.FormattedText>
+							<FormattedString>
+								<Span Text="Свободных мест: "></Span>
+								<Span x:Name="FreePlacesSpan" Text="{Binding Path=SelectedDetailParking.FreeParkingSpaces}"></Span>
+							</FormattedString>
+						</Label.FormattedText>
+					</Label>
+				</Grid>
+
+				<Frame>
+					<Image x:Name="Image" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All"
+					       HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFill" Margin="10" />
+				</Frame>
+				<Label Padding="6, 2" FontSize="Medium" FontFamily="RobotoLight" HorizontalTextAlignment="Center">
 					<Label.FormattedText>
 						<FormattedString>
-							<Span Text="Всего мест: "></Span>
-							<Span Text="{Binding Path=SelectedDetailParking.TotalParkingSpaces}"></Span>
-						</FormattedString>
-					</Label.FormattedText>
-				</Label>
-				<Label Padding="6, 2" FontSize="17" FontFamily="RobotoMedium">
-					<Label.FormattedText>
-						<FormattedString>
-							<Span Text="Свободных мест: "></Span>
-							<Span x:Name="FreePlacesSpan" Text="{Binding Path=SelectedDetailParking.FreeParkingSpaces}"></Span>
-						</FormattedString>
-					</Label.FormattedText>
-				</Label>
-				<Label Padding="6, 2" FontSize="Medium" FontFamily="RobotoLight">
-					<Label.FormattedText>
-						<FormattedString>
-							<Span Text="X: " ></Span>
+							<Span Text="X: "></Span>
 							<Span Text="{Binding SelectedDetailParking.CoordX}"></Span>
 							<Span Text=" Y: "></Span>
 							<Span Text="{Binding  SelectedDetailParking.CoordY}"></Span>
 						</FormattedString>
 					</Label.FormattedText>
 				</Label>
-				<Frame>
-					<Image x:Name="Image" AbsoluteLayout.LayoutBounds="0,0,1,1"   AbsoluteLayout.LayoutFlags="All" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Aspect="AspectFill"/>
-				</Frame>
 			</StackLayout>
 		</ScrollView>
 	</RefreshView>

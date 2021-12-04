@@ -4,10 +4,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.AspNetCore.SignalR.Client;
 using ParkingApp.Models;
 using ParkingApp.Pages;
 using ParkingApp.Services;
 using Xamarin.Forms;
+using System;
 
 namespace ParkingApp.ViewModel
 {
@@ -17,6 +19,11 @@ namespace ParkingApp.ViewModel
 	public class ApplicationViewModel : INotifyPropertyChanged
 	{
 		#region Fields/Private
+
+		/// <summary>
+		/// Хаб webSoket.
+		/// </summary>
+		private HubConnection _hubConnection;
 
 		/// <summary>
 		/// Список парковок.
@@ -53,9 +60,24 @@ namespace ParkingApp.ViewModel
 		/// </summary>
 		private bool _isRefreshing;
 
+		/// <summary>
+		/// Флаг подключения.
+		/// </summary>
+		bool isConnected;
+
 		#endregion
 
 		#region Fields/Public
+
+		/// <summary>
+		/// Делегат для события обновления.
+		/// </summary>
+		public delegate void UpdateParking(int message);
+
+		/// <summary>
+		/// Событие обновления.
+		/// </summary>
+		public event UpdateParking Notify;  
 
 		/// <summary>
 		/// Список парковок. 
@@ -139,6 +161,23 @@ namespace ParkingApp.ViewModel
 		/// </summary>
 		public byte[] Photo { get; set; }
 
+		/// </summary>
+		///Флаг подключение (может как-то будем обрабатывать)
+		/// </summary>
+		public bool IsConnected
+		{
+			get => isConnected;
+			set
+			{
+				if (isConnected != value)
+				{
+					isConnected = value;
+					//NotifyPropertyChanged("IsConnected");
+				}
+			}
+		}
+
+
 		#endregion
 
 		#region Events
@@ -169,6 +208,50 @@ namespace ParkingApp.ViewModel
 			_parkingPlaces = new ObservableCollection<Parking>();
 			_parkingService = new ParkingService();
 			ParkingPlaces = new ObservableCollection<Parking>();
+
+			_hubConnection = new HubConnectionBuilder()
+				.WithUrl("http://89.108.88.254:81/connect")
+				.Build();
+
+			//Пытаемся переподключиться в случае сброса соединения 
+			_hubConnection.Closed += async (error) =>
+			{
+				IsConnected = false;
+				await Task.Delay(5000);
+				await Connect();
+			};
+
+			//Прием новой информации
+			_hubConnection.On<int, int>("Notify", UpdateByHub);
+		}
+		/// <summary>
+		/// Подключение к серверу
+		/// </summary>
+		public async Task Connect()
+		{
+			if (IsConnected)
+				return;
+			try
+			{
+				await _hubConnection.StartAsync();
+				IsConnected = true;
+			}
+			catch (Exception ex)
+			{
+				//Можно какой-нибудь обработчик придумать
+				//SendLocalMessage(String.Empty, $"Ошибка подключения: {ex.Message}");
+			}
+		}
+		/// </summary>
+		///Отключение от сервера
+		/// </summary>
+		public async Task Disconnect()
+		{
+			if (!IsConnected)
+				return;
+
+			await _hubConnection.StopAsync();
+			IsConnected = false;
 		}
 
 		/// <summary>
@@ -228,7 +311,7 @@ namespace ParkingApp.ViewModel
 		public void Sorting()
 		{
 			var sortableList = new List<Parking>(ParkingPlaces);
-			var orderedEnumerable = sortableList.OrderBy(x => x.Address).ToList();
+			var orderedEnumerable = sortableList.OrderBy(x => x.Id).ToList();
 			ParkingPlaces.Clear();
 			foreach (var parkingPlace in orderedEnumerable)
 			{
@@ -238,26 +321,35 @@ namespace ParkingApp.ViewModel
 		}
 
 		/// <summary>
-		/// Сортирует список.
+		/// Обновление по уведомлениб от сервера.
 		/// </summary>
-		public async Task UpdateList()
+		/// <param name="parkingId">Идентфиикатор парковки.</param>
+		/// <param name="newFreeSpaces">Новое количество свободных парковочных мест.</param>
+		private void UpdateByHub(int parkingId, int newFreeSpaces)
 		{
-			var updatedList = (List<Parking>)await _parkingService.GetAll();
-			foreach (var updatedParking in updatedList)
+			//Обновляем значение у данной парковки в общем списке
+			foreach (var parkingPlace in ParkingPlaces)
 			{
-				foreach (var parkingPlace in ParkingPlaces)
+				if (parkingId == parkingPlace.Id)
 				{
-					if (updatedParking.Id == parkingPlace.Id)
-					{
-						parkingPlace.FreeParkingSpaces = updatedParking.FreeParkingSpaces;
-					}
+					parkingPlace.FreeParkingSpaces = newFreeSpaces;
 				}
 			}
-			Sorting();
-			NotifyPropertyChanged("ListUpdated");
+			//Если праковка не выбрана или Id не совпадает, значит мы в главном меню и обновляем его
+			if (_selectedDetailParking == null || parkingId != _selectedDetailParking.Id)
+			{
+				Sorting();
+				NotifyPropertyChanged("ListUpdated");
+			}
+			//Иначе обновляем страницу с детальной парковкой и картинку
+ 			else
+ 			{ 
+				_selectedDetailParking.FreeParkingSpaces = newFreeSpaces;
+				NotifyPropertyChanged("SelectedDetailParking");
+				Notify?.Invoke(newFreeSpaces);
+			}
 		}
 
 		#endregion
-		
 	}
 }

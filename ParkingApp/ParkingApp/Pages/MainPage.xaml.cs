@@ -15,11 +15,6 @@ namespace ParkingApp.Pages
 		private ApplicationViewModel ViewModel { get; set; }
 
 		/// <summary>
-		/// Таймер для обновления.
-		/// </summary>
-		private static System.Timers.Timer _updaterTimer;
-
-		/// <summary>
 		/// Конструктор.
 		/// </summary>
 		public MainPage()
@@ -36,14 +31,20 @@ namespace ParkingApp.Pages
 		{
 			await ViewModel.GetParkingPlaces();
 			ViewModel.Sorting();
-			SetTimer();
+			//SetTimer();
+			//Устанавливаем соединение для обновлений
+			await ViewModel.Connect();
 			base.OnAppearing();
 			ParkingSearch.Text = string.Empty;
 		}
 
-		protected override void OnDisappearing()
+		/// <summary>
+		/// Срабатывает при уничтожении страницы.
+		/// </summary>
+		protected override async void OnDisappearing()
 		{
-			StopTimer();
+			//Разрываем соединение
+			await ViewModel.Disconnect();
 			base.OnDisappearing();
 		}
 
@@ -61,33 +62,6 @@ namespace ParkingApp.Pages
 		private void ParkingList_OnRefreshing(object sender, EventArgs e)
 		{
 			ParkingSearch.Text = string.Empty;
-		}
-
-		/// <summary>
-		/// Таймер для обновления.
-		/// </summary>
-		private void SetTimer()
-		{
-			_updaterTimer = new System.Timers.Timer(10000);
-			_updaterTimer.Elapsed += UpdateParkingPlaces;
-			_updaterTimer.AutoReset = true;
-			_updaterTimer.Enabled = true;
-		}
-
-		/// <summary>
-		/// Останавливает таймер.
-		/// </summary>
-		private void StopTimer()
-		{
-			_updaterTimer.Stop();
-		}
-
-		/// <summary>
-		/// Обновляет фото в форме.
-		/// </summary>
-		private async void UpdateParkingPlaces(object sender, EventArgs e)
-		{
-			await ViewModel.UpdateList();
 		}
 	}
 }

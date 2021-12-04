@@ -16,11 +16,6 @@ namespace ParkingApp.Pages
 		private ApplicationViewModel ViewModel { get; set; }
 
 		/// <summary>
-		/// Таймер для обновления.
-		/// </summary>
-		private static System.Timers.Timer _updaterTimer;
-
-		/// <summary>
 		/// Конструктор.
 		/// </summary>
 		/// <param name="viewModel">Вспомогательная модель для отображения.</param>
@@ -39,7 +34,7 @@ namespace ParkingApp.Pages
 			await ViewModel.GetParkById();
 			await ViewModel.UpdatePhoto();
 			Image.Source = ImageSource.FromStream(() => new MemoryStream(ViewModel.Photo));
-			SetTimer();
+			ViewModel.Notify += UpdatePhoto;
 			base.OnAppearing();
 		}
 
@@ -48,7 +43,7 @@ namespace ParkingApp.Pages
 		/// </summary>
 		protected override void OnDisappearing()
 		{
-			StopTimer();
+			ViewModel.Notify -= UpdatePhoto;
 			base.OnDisappearing();
 		}
 
@@ -64,35 +59,15 @@ namespace ParkingApp.Pages
 		/// <summary>
 		/// Обновляет фото в форме.
 		/// </summary>
-		private async void UpdatePhoto(object sender, EventArgs e)
+		private async void UpdatePhoto(int spaces)
 		{
 			await ViewModel.UpdatePhoto();
-			await ViewModel.GetParkById();
 			Device.BeginInvokeOnMainThread(() =>
 				{
 					Image.Source = ImageSource.FromStream(() => new MemoryStream(ViewModel.Photo));
-					FreePlacesSpan.Text = ViewModel.SelectedDetailParking.FreeParkingSpaces.ToString();
+					FreePlacesSpan.Text = spaces.ToString();
 				}
 			);
-		}
-
-		/// <summary>
-		/// Таймер для обновления.
-		/// </summary>
-		private void SetTimer()
-		{
-			_updaterTimer = new System.Timers.Timer(10000);
-			_updaterTimer.Elapsed += UpdatePhoto;
-			_updaterTimer.AutoReset = true;
-			_updaterTimer.Enabled = true;
-		}
-
-		/// <summary>
-		/// Останавливает таймер.
-		/// </summary>
-		private void StopTimer()
-		{
-			_updaterTimer.Stop();
 		}
 	}
 }
